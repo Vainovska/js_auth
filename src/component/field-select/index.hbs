@@ -3,7 +3,8 @@
   <div class='field__container'>
     <button
       onclick='fieldSelect.toggle(this)'
-      class='field__select'
+      class='field__select validation'
+      name="{{name}}"
       type='button'
     >
       <span
@@ -11,7 +12,7 @@
       >{{placeholder}}</span>
       <span class='field__icon'></span>
     </button>
-    <ul active class='field__option--list'>
+    <ul class='field__option--list'>
       {{#each list}}
         <li
           onclick="fieldSelect.change(this);

@@ -10,7 +10,7 @@
     gap: s.space(2);
   }
   &__error {
-    color: s.color('red');
+    color: s.color(red);
     font-size: 12px;
     display: none;
 
@@ -28,22 +28,39 @@
   &:active {
     opacity: 0.3;
   }
+  &--disabled {
+    opacity: 0.5;
+    cursor: default;
+    &:hover,
+    &:active {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
 }
 .alert {
   border: 1px solid transparent;
   border-radius: 10px;
   padding: s.space(3) s.space(4);
   font-size: 14px;
-  &--succes {
-    border-color: s.color('green');
-    color: s.color('green');
+  &--success {
+    border-color: s.color(green);
+    color: s.color(green);
   }
   &--error {
-    border-color: s.color('red');
-    color: s.color('red');
+    border-color: s.color(red);
+    color: s.color(red);
   }
   &--progress {
-    border-color: s.color('blue');
-    color: s.color('blue');
+    border-color: s.color(blue);
+    color: s.color(blue);
+  }
+  &--disabled {
+    display: none;
+  }
+}
+.validation {
+  &--active {
+    border-color: s.color(red) !important;
   }
 }
