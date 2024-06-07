@@ -1,21 +1,17 @@
 @use '../../style' as s;
 @use '../../style/form.scss' as form;
-.user {
+.data {
   display: flex;
   flex-direction: column;
   gap: s.space(2);
-  &--click {
-    @include s.click;
-    text-decoration: none;
-  }
   &__title {
     font-size: 16px;
     height: 16px;
-    color: s.color(gray);
+    color: s.color(dark);
   }
-  &__sub {
+  &__value {
     font-size: 14px;
     height: 14px;
-    color: s.color(light);
+    color: s.color(gray);
   }
 }

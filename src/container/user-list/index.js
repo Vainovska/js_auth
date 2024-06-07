@@ -1,75 +1,88 @@
-import {
-  Form,
-  REG_EXP_EMAIL,
-  REG_EXP_PASSWORD,
-} from '../../script/form'
-import { saveSession } from '../../script/session'
-class SignupForm extends Form {
-  FIELD_NAME = {
-    EMAIL: 'email',
-    PASSWORD: 'password',
+import { List } from '../../script/list'
+import { USER_ROLE } from '../../script/user'
+class UserList extends List {
+  constructor() {
+    super()
+    this.element = document.querySelector('#user-list')
+    if (!this.element) throw new Error('Element in null')
+    this.loadData()
   }
-  FIELD_ERROR = {
-    IS_EMPTY: 'Введіть значення в поле',
-    IS_BIG: 'Дуже довге значення',
-    EMAIL: 'Введіть коректне значення e-mail адреси',
-  }
-
-  validate = (name, value) => {
-    if (String(value).length < 1) {
-      return this.FIELD_ERROR.IS_EMPTY
-    }
-    if (String(value).length > 20) {
-      return this.FIELD_ERROR.IS_BIG
-    }
-    if (name === this.FIELD_NAME.EMAIL) {
-      if (!REG_EXP_EMAIL.test(String(value))) {
-        return this.FIELD_ERROR.EMAIL
+  loadData = async () => {
+    this.updateStatus(this.STATE.LOADING)
+    try {
+      const res = await fetch('/user-list-data', {
+        method: 'GET',
+      })
+      const data = await res.json()
+      if (res.ok) {
+        this.updateStatus(
+          this.STATE.SUCCESS,
+          this.convertData(data),
+        )
+      } else {
+        this.updateStatus(this.STATE.ERROR, data)
       }
+    } catch (error) {
+      console.log(error)
+      this.updateStatus(this.STATE.ERROR, {
+        message: error.message,
+      })
     }
   }
-  submit = async () => {
-    if (this.disabled === true) {
-      this.validateAll()
-    } else {
-      console.log(this.value)
+  convertData = (data) => {
+    return {
+      ...data,
+      list: data.list.map((item) => ({
+        ...item,
+        role: USER_ROLE[item.role],
+      })),
+    }
+  }
+  updateView = () => {
+    this.element.innerHTML = ''
+    console.log(this.status, this.data)
+    switch (this.status) {
+      case this.STATE.LOADING:
+        this.element.innerHTML = `<div class="user">
+        <span class="user__title skeleton"></span>
+        <span class="user__sub skeleton"></span>
+      </div>
+      <div class="user">
+        <span class="user__title skeleton"></span>
+        <span class="user__sub skeleton"></span>
+      </div>
+      <div class="user">
+        <span class="user__title skeleton"></span>
+        <span class="user__sub skeleton"></span>
+      </div>
+      <div class="user">
+        <span class="user__title skeleton"></span>
+        <span class="user__sub skeleton"></span>
+      </div>`
+        break
 
-      this.setAlert('progress', 'Завантаження...')
-
-      try {
-        const res = await fetch('/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: this.convertData(),
+      case this.STATE.SUCCESS:
+        this.data.list.forEach((item) => {
+          this.element.innerHTML += `<a href="/user-item?id=${item.id}" class="user user--click">
+          <span class="user__title">${item.email}</span>
+          <span class="user__sub">${item.role}</span>
+        </a>`
         })
-        const data = await res.json()
-        if (res.ok) {
-          this.setAlert('success', data.message)
-          saveSession(data.session)
-          location.assign('/')
-        } else {
-          this.setAlert('error', data.message)
-        }
-      } catch (error) {
-        this.setAlert('error', error.message)
-      }
+        break
+
+      case this.STATE.ERROR:
+        this.element.innerHTML = `<span class="alert alert--error">${this.data.message}</span>`
+        break
     }
-  }
-  convertData = () => {
-    return JSON.stringify({
-      [this.FIELD_NAME.EMAIL]:
-        this.value[this.FIELD_NAME.EMAIL],
-      [this.FIELD_NAME.PASSWORD]:
-        this.value[this.FIELD_NAME.PASSWORD],
-    })
   }
 }
-window.signupForm = new SignupForm()
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (window.session) {
-    location.assign('/')
-  }
+  try {
+    if (!window.session || !window.session.user.isConfirm) {
+      location.assign('/')
+    }
+  } catch (err) {}
+
+  new UserList()
 })
