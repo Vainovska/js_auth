@@ -46,7 +46,6 @@ class SignupForm extends Form {
         })
         const data = await res.json()
         if (res.ok) {
-          console.log(data.session)
           this.setAlert('success', data.message)
           saveSession(data.session)
           location.assign('/')

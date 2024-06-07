@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const session = getSession()
 
       location.assign(
-        `/signup-confirm?renew=true&${session.user.email}`,
+        `/signup-confirm?renew=true&email=${session.user.email}`,
       )
     })
 })

@@ -145,7 +145,7 @@ router.post('/recovery-confirm', function (req, res) {
   }
 })
 router.get('/signup-confirm', function (req, res) {
-  const { renew, email } = req.body
+  const { renew, email } = req.query
   if (renew) {
     Confirm.create(email)
   }
@@ -158,6 +158,7 @@ router.get('/signup-confirm', function (req, res) {
 })
 router.post('/signup-confirm', function (req, res) {
   const { code, token } = req.body
+
   if (!code || !token) {
     return res.status(400).json({
       message: `Помилка. Обов'язкові поля відсутні`,
@@ -171,6 +172,7 @@ router.post('/signup-confirm', function (req, res) {
       })
     }
     const email = Confirm.getData(code)
+    console.log(email)
     if (!email) {
       return res.status(400).json({
         message: `Код не існує`,
@@ -210,7 +212,6 @@ router.post('/login', function (req, res) {
       message: `Помилка. Обов'язкові поля відсутні`,
     })
   }
-  console.log(email, password)
   try {
     const user = User.getByEmail(email)
     if (!user) {
